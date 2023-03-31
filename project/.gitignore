@@ -1,0 +1,30 @@
+
+# Created by sabeel
+
+.DS_Store
+._*
+### Django ###
+*.log
+*.pot
+*.pyc
+__pycache__/
+*/__pycache__/
+*/*/__pycache__/
+
+migrations/*.py
+*/migrations/*.py
+*/*/migrations/*.py
+media/
+!migrations/*.py
+!*/migrations/*.py
+!*/*/migrations/*.py
+
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+settings.py
+# Environments
+.env
+.venv
+env/
+venv/
