@@ -1,34 +1,30 @@
 import uuid
 from django.db import models
-from django.core.validators import MinValueValidator
-from decimal import Decimal
 
-
-class BaseModel(models.Model):
-    id = models.UUIDField(primary_key=True, editable=False)
-    auto_id = models.PositiveIntegerField(db_index=True,unique=True)
-    creator = models.ForeignKey("auth.User",blank=True,related_name="creator_%(class)s_objects",on_delete=models.CASCADE)
-    updater = models.ForeignKey("auth.User",blank=True,null=True,related_name="updater_%(class)s_objects",on_delete=models.CASCADE)
-    date_added = models.DateTimeField(db_index=True,auto_now_add=True)    
-    date_updated = models.DateTimeField(auto_now_add=True)  
+class Basemodel(models.Model):
+    auto_id = models.BigAutoField(primary_key=True, editable=False)
+    creator = models.CharField(max_length=255)
+    updater = models.CharField(max_length=255)
+    date_added = models.DateTimeField(auto_now_add=True, db_index=True)
+    date_updated = models.DateTimeField(auto_now=True)
     is_deleted = models.BooleanField(default=False)
-    
+
     class Meta:
         abstract = True
 
-class Category(BaseModel):
+class Category(Basemodel):
     name = models.CharField(max_length=255)
     description = models.TextField(max_length=255)
 
     class Meta:
         db_table = 'category'
-        ordering = ('auto_id',)
+        ordering = ('name',)
 
     def __str__(self):
-        return str(self.auto_id)
+        return "%s" % self.id
 
 
-class Products(BaseModel):
+class Products(Basemodel):
     category = models.ForeignKey('Category', on_delete=models.CASCADE)
     description = models.TextField(max_length=255)
     mrp = models.TextField(max_length=20)
@@ -36,12 +32,12 @@ class Products(BaseModel):
 
     class Meta:
         db_table = 'products'
-        ordering = ('auto_id',)
+        ordering = ('category',)
 
     def __str__(self):
-        return str(self.auto_id)
+        return str(self.category)
 
-class ProductImages(BaseModel):
+class ProductImages(Basemodel):
     product = models.ForeignKey("Products", limit_choices_to={
                       'is_deleted': False}, on_delete=models.CASCADE)
     image = models.ImageField(upload_to="products/images", blank=True, null=True)
@@ -49,7 +45,7 @@ class ProductImages(BaseModel):
 
     class Meta:
         db_table = 'product_image'
-        ordering = ('auto_id',)
+        ordering = ('product',)
 
     def __str__(self):
-        return str(self.auto_id)
+        return str(self.product)
