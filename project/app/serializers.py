@@ -27,4 +27,4 @@ class ProductImageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model=ProductImages
-        fields=['auto_id', 'id', 'product', 'image', 'is_deleted']
+        fields=['auto_id', 'id', 'product', 'image', 'is_active', 'is_deleted']
