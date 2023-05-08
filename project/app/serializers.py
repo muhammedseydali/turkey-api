@@ -3,34 +3,23 @@ from django.contrib.auth.models import User
 from . models import Category, Products, ProductImages
 from .function import generate_auto_id
 
-class CategorySerializer(serializers.ModelSerializer):
+
+class CategoryCreateSerializer(serializers.ModelSerializer):
     auto_id = serializers.IntegerField(read_only=True)
+    is_deleted = serializers.BooleanField(required=False)
 
     class Meta:
         model=Category
-        fields=['auto_id' ,'name', 'description']
-    
-    def create(self, validated_data):
-        creator = self.context['request']
-        print(creator, 'creator')
-        updater = creator
-        auto_id = generate_auto_id(Category)
-        return Category.objects.create(creator=creator, updater=updater, auto_id=auto_id, **validated_data)
+        fields=['auto_id' ,'id', 'name', 'description', 'is_deleted']
 
 
 class ProductSerializer(serializers.ModelSerializer):
     auto_id = serializers.IntegerField(read_only=True)
+    is_deleted = serializers.BooleanField(required=False)
 
     class Meta:
         model=Products
-        fields=['category', 'description', 'mrp', 'is_active']
-    
-    def create(self, validated_data):
-        creator = self.context['user']
-        updater = creator
-        auto_id = generate_auto_id(Products)
-        return Products.objects.create(creator=creator, updater=updater, auto_id=auto_id, **validated_data)
-
+        fields=['auto_id', 'id', 'category', 'description', 'mrp', 'is_active', 'is_deleted']
 
 class ProductImageSerializer(serializers.ModelSerializer):
     auto_id = serializers.IntegerField(read_only=True)
@@ -38,12 +27,4 @@ class ProductImageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model=ProductImages
-        fields=['product', 'image', 'is_deleted']
-
-    def create(self, validated_data):
-        creator = self.context['user']
-        updater = creator
-        auto_id = generate_auto_id(ProductImages)
-        return ProductImages.objects.create(creator=creator, updater=updater, auto_id=auto_id, **validated_data)
-
-
+        fields=['auto_id', 'id', 'product', 'image', 'is_deleted']
