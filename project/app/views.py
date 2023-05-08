@@ -4,16 +4,15 @@ from django.shortcuts import render
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated, AllowAny  # NOQA
 from rest_framework.response import Response
-import re
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 from django.http.response import HttpResponse, HttpResponseRedirect
-import json
 from .models import Products, Category, ProductImages 
 from django.contrib.auth.decorators import login_required
 import datetime
 from django.db.models import Q
-from .serializers import CategorySerializer, ProductSerializer, ProductImageSerializer
+from .serializers import CategoryCreateSerializer, ProductSerializer, ProductImageSerializer
+from .function import generate_auto_id
 
 
 class Category_add(ModelViewSet):
@@ -21,8 +20,22 @@ class Category_add(ModelViewSet):
     A viewset for viewing and editing category instances.
     """
     permission_classes = (AllowAny,)
-    serializer_class = CategorySerializer
+    serializer_class = CategoryCreateSerializer
     queryset = Category.objects.all()
+
+    def get_serializer_context(self):
+        return {
+            'request':self.request,
+            'user':self.request.user
+        }
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        creator = request.user
+        updater = creator
+        category = Category.objects.create(creator=creator, updater=updater, auto_id=generate_auto_id(Category), **serializer.validated_data)
+        return Response(CategoryCreateSerializer(category).data)
 
 class Product_Add(ModelViewSet):
     """
@@ -32,6 +45,20 @@ class Product_Add(ModelViewSet):
     serializer_class = ProductSerializer
     queryset = Products.objects.all()
 
+    def get_serializer_context(self):
+        return {
+            'request':self.request,
+            'user':self.request.user
+        }
+    
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        creator = request.user
+        updater = creator
+        product = Products.objects.create(creator=creator, updater=updater, auto_id=generate_auto_id(Products), **serializer.validated_data)
+        return Response(ProductSerializer(product).data)
+    
 class ProductImage_Add(ModelViewSet):
     """
     A viewset for viewing and editing category instances.
@@ -39,3 +66,18 @@ class ProductImage_Add(ModelViewSet):
     permission_classes = (AllowAny,)
     serializer_class = ProductImageSerializer
     queryset = ProductImages.objects.all()
+
+    def get_serializer_context(self):
+        return {
+            'request':self.request,
+            'user':self.request.user
+        }
+    
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        creator = request.user
+        updater = creator
+        product_images = ProductImages.objects.create(creator=creator, updater=updater, auto_id=generate_auto_id(ProductImages), **serializer.validated_data)
+        return Response(ProductSerializer(product_images).data)
+    
