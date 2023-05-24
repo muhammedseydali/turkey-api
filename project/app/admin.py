@@ -8,7 +8,7 @@ class CategoryAdmin(admin.ModelAdmin):
 
 class ProductsAdmin(admin.ModelAdmin):
     model = Products
-    list_display = ['auto_id', 'category', 'description', 'mrp', 'is_active']
+    list_display = ['auto_id', 'name' ,'category', 'description', 'mrp', 'is_active']
 
 class ProductImagesAdmin(admin.ModelAdmin):
     model = ProductImages

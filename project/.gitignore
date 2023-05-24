@@ -28,3 +28,5 @@ settings.py
 .venv
 env/
 venv/
+
+*migrations

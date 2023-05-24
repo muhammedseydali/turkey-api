@@ -1,4 +1,3 @@
-from django.shortcuts import render
 
 # Create your views here.
 from rest_framework.viewsets import ModelViewSet
@@ -11,8 +10,11 @@ from .models import Products, Category, ProductImages
 from django.contrib.auth.decorators import login_required
 import datetime
 from django.db.models import Q
-from .serializers import CategoryCreateSerializer, ProductSerializer, ProductImageSerializer
+from .serializers import CategoryCreateSerializer, ProductSerializer, ProductImageSerializer,ProductRetrieveSerializer
 from .function import generate_auto_id
+
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
 
 class Category_add(ModelViewSet):
@@ -50,6 +52,10 @@ class Product_Add(ModelViewSet):
             'request':self.request,
             'user':self.request.user
         }
+    def get_serializer_class(self):
+        if self.request.method in ['POST', 'PUT']:
+            return ProductSerializer
+        return ProductRetrieveSerializer
     
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -58,6 +64,8 @@ class Product_Add(ModelViewSet):
         updater = creator
         product = Products.objects.create(creator=creator, updater=updater, auto_id=generate_auto_id(Products), **serializer.validated_data)
         return Response(ProductSerializer(product).data)
+
+
     
 class ProductImage_Add(ModelViewSet):
     """

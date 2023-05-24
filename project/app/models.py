@@ -32,6 +32,7 @@ class Category(Basemodel):
 
 
 class Products(Basemodel):
+    name = models.CharField(max_length=255, null=False)
     category = models.ForeignKey('Category', on_delete=models.CASCADE)
     description = models.TextField(max_length=255)
     mrp = models.IntegerField(validators=[MaxValueValidator(99999), MinValueValidator(0)])
@@ -45,8 +46,7 @@ class Products(Basemodel):
         return str(self.category)
 
 class ProductImages(Basemodel):
-    product = models.ForeignKey("Products", limit_choices_to={
-                      'is_deleted': False}, on_delete=models.CASCADE)
+    product = models.ForeignKey("Products", on_delete=models.CASCADE)
     image = models.ImageField(upload_to="products/images", blank=True, null=True)
     is_deleted = models.BooleanField(default=False)
 
@@ -56,3 +56,8 @@ class ProductImages(Basemodel):
 
     def __str__(self):
         return str(self.product)
+
+def get_upload_path(instance, filename):
+    model = instance.album.model.__class__._meta
+    name = model.verbose_name_plural.replace(' ', '_')
+    return f'{name}/images/{filename}'
